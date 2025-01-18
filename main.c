@@ -50,21 +50,24 @@ struct config {
 };
 
 void load_config(struct config *cfg) {
+    cfg->show_pw = 0;
+    cfg->clipboard = 1;
     FILE *f = fopen("config","r");
     if (!f) {
-        cfg->show_pw = 0;
-        cfg->clipboard = 1;
         return;
     }
     char buf[1024];
     size_t lines_read = 0;
-    int start_line = 3;
     while(fgets(buf, 1024, f)) {
-        switch(++lines_read + start_line) {
+        switch(++lines_read) {
             case 3:
                 cfg->show_pw = (int) *buf - 48;
+                break;
             case 4:
                 cfg->clipboard = (int) *buf - 48;
+                break;
+            default:
+                break;
         }
     }
 }
@@ -86,14 +89,14 @@ int main(void) {
         pw_print = pw;
     }
     else {
-        pw_print = (char*) malloc(sizeof(char) * pw_length);
+        pw_print = (char*) calloc(pw_length, sizeof(char));
         memset(pw_print, '*', pw_length);
     }
     printf("password: %s\n", pw_print);
-    copy_to_clipboard(pw);
-    printf("copied to clipboard!\n");
+    if (cfg.clipboard) {
+        copy_to_clipboard(pw);
+        printf("copied to clipboard!\n");
+    }
     wait_for_user();
-    free(pw);
-    free(pw_print);
     return 0;
 }
