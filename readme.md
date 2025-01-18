@@ -1,4 +1,4 @@
-# simple password generator
+# simple password generator for Windows
 #### usage
 on password length prompt, press enter to use default length of 32.
 #### hints
